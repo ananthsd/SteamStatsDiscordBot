@@ -1,0 +1,11 @@
+{
+  "name": "dota-stats-bot",
+  "version": "1.0.0",
+  "description": "Get Dota Info",
+  "main": "bot.js",
+  "author": "Thedarkbobman",
+  "dependencies": {
+    "discord.io": "^2.5.3",
+    "winston": "^2.4.0"
+  }
+}
