@@ -2,6 +2,8 @@ var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
 var converter = require('steam-id-convertor');
+var userCommands = [];
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(logger.transports.Console, {
@@ -97,9 +99,28 @@ function doProfileStats( steam32ID,channelID, steam64ID){
 	});
 
 }
+
 bot.on('message', function (user, userID, channelID, message, evt) {
 	// Our bot needs to know if it will execute a command
 	// It will listen for messages that will start with `!`
+	var userObj = userCommands.find(x => x.ID === userID);
+	if(typeof userObj !== 'undefined'){
+		if(Date.now()-userObj.time<5000){
+			/*bot.sendMessage({
+				to: userID,
+				message: "Hey " + user.toString() + ", you are sending commands too fast. I hope you aren't spamming, because that's mean."
+			});*/
+			console.log("spam blocked");
+			return;
+		}
+		else{
+			userObj.time = Date.now();
+		}
+	}
+	else{
+
+	userCommands.push({ID:userID,time:Date.now()});
+}
 	if (message.substring(0, 1) == '!') {
 		var args = message.substring(1).split(' ');
 		var cmd = args[0];
@@ -116,7 +137,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		case 'help':
 			bot.sendMessage({
 				to: channelID,
-				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n `!ping` to see if the bot is online.\n `!herostats <hero-id>` to see hero stats.\n`!dotaProfile <steam id (custom or not)>` to get basic info."
+				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaProfile <steam id (custom or not)>` to get basic info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
 			});
 			break;
 		case 'dotaProfile':
@@ -124,6 +145,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 			var playerID = message.substring(message.indexOf(' ') + 1);
 			console.log(playerID);
 			var steam64ID = 0;
+
 			https.get("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key="+auth.steamKey+"&vanityurl="+playerID, res => {
 				res.setEncoding("utf8");
 				let bodySteam = "";
