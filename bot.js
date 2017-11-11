@@ -107,7 +107,15 @@ function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl){
 		});
 		res.on("end", () => {
 			body = JSON.parse(body);
+			if(body.playerstats==undefined){
+					console.log("profile not found");
+				bot.sendMessage({
+					to: channelID,
+					message: "No CSGO profile found."
 
+				});
+				return;
+			}
 						bot.sendMessage({
 														to: channelID,
 														message: "Your wish is my command!",
