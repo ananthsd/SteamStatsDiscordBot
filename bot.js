@@ -2,6 +2,7 @@ var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
 var converter = require('steam-id-convertor');
+var bigInt = require("big-integer");
 var userCommands = [];
 
 // Configure logger settings
@@ -87,10 +88,6 @@ function doProfileStats( steam32ID,channelID, steam64ID){
 														console.log(response);
 													});
 
-
-
-
-
 				});
 			});
 
@@ -100,30 +97,82 @@ function doProfileStats( steam32ID,channelID, steam64ID){
 
 }
 
+function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl){
+
+	https.get("https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key="+auth.steamKey+"&steamid=" + steam64ID +"&appid=730", res => {
+		res.setEncoding("utf8");
+		let body = "";
+		res.on("data", data => {
+			body += data;
+		});
+		res.on("end", () => {
+			body = JSON.parse(body);
+
+						bot.sendMessage({
+														to: channelID,
+														message: "Your wish is my command!",
+														embed: {
+															title: "Steam",
+															url: "http://steamcommunity.com/id/"+customUrl,
+															thumbnail: {
+																url: profilePic+""
+															},
+															fields: [{
+																	name: "Name",
+																	value: name+""
+																}, {
+																	name: "Achievements",
+																	value: "You have "+body.playerstats.achievements.length+" achievements!"
+																}, {
+																	name: "Total Time Played",
+																	value: bigInt(""+body.playerstats.stats[2].value).divide(3600)+" hrs played."
+																}
+															]
+														}
+													}, function (error, response) {
+														console.log(error);
+														console.log(response);
+													});
+
+				});
+
+
+
+	});
+
+
+}
+
+
+
+
+
+
 bot.on('message', function (user, userID, channelID, message, evt) {
 	// Our bot needs to know if it will execute a command
 	// It will listen for messages that will start with `!`
-	var userObj = userCommands.find(x => x.ID === userID);
-	if(typeof userObj !== 'undefined'){
-		if(Date.now()-userObj.time<5000){
-			/*bot.sendMessage({
-				to: userID,
-				message: "Hey " + user.toString() + ", you are sending commands too fast. I hope you aren't spamming, because that's mean."
-			});*/
-			console.log("spam blocked");
-			return;
+
+	if (message.substring(0, 1) == '!') {
+		var userObj = userCommands.find(x => x.ID === userID);
+		if(typeof userObj !== 'undefined'){
+			if(Date.now()-userObj.time<5000){
+				bot.sendMessage({
+					to: userID,
+					message: "Hey " + user.toString() + ", you are sending commands too fast. I hope you aren't spamming, because that's mean."
+				});
+				console.log("spam blocked");
+				return;
+			}
+			else{
+				userObj.time = Date.now();
+			}
 		}
 		else{
-			userObj.time = Date.now();
-		}
-	}
-	else{
 
-	userCommands.push({ID:userID,time:Date.now()});
-}
-	if (message.substring(0, 1) == '!') {
+		userCommands.push({ID:userID,time:Date.now()});
+	}
 		var args = message.substring(1).split(' ');
-		var cmd = args[0];
+		var cmd = args[0].toLowerCase();
 
 		args = args.splice(1);
 		switch (cmd) {
@@ -137,10 +186,10 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		case 'help':
 			bot.sendMessage({
 				to: channelID,
-				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaProfile <steam id (custom or not)>` to get basic info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
 			});
 			break;
-		case 'dotaProfile':
+		case 'dotaprofile':
 
 			var playerID = message.substring(message.indexOf(' ') + 1);
 			console.log(playerID);
@@ -193,14 +242,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 							});
 						});
 					}
-
-
-
-
-
-
-
-
 
 
 
@@ -268,7 +309,60 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 				});
 			});
 			break;
-			// Just add any case commands if you want to..
+			case 'csgostats':
+
+			var playerID = message.substring(message.indexOf(' ') + 1);
+			console.log(playerID);
+			var steam64ID = 0;
+
+			https.get("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key="+auth.steamKey+"&vanityurl="+playerID, res => {
+				res.setEncoding("utf8");
+				let bodySteam = "";
+				res.on("data", steamData => {
+					bodySteam += steamData;
+				});
+				res.on("end", () => {
+					bodySteam = JSON.parse(bodySteam);
+					console.log("sucess = "+bodySteam.response.success);
+					var searchID = playerID;
+					if(bodySteam.response.success===1){
+						console.log("steamid = "+bodySteam.response.steamid);
+						steam64ID = (bodySteam.response.steamid);
+						searchID = steam64ID;
+					}
+
+						https.get("https://api.steampowered.com/isteamuser/getplayersummaries/v0002/?key="+auth.steamKey+"&steamids="+searchID, res => {
+							res.setEncoding("utf8");
+							let bodySteam2 = "";
+							res.on("data", steamData2 => {
+								bodySteam2 += steamData2;
+							});
+							res.on("end", () => {
+								//console.log(bodySteam2);
+								bodySteam2 = JSON.parse(bodySteam2);
+
+								if(bodySteam2.response.players.length==0){
+									bot.sendMessage({
+										to: channelID,
+										message: "No players found."
+
+									});
+									return;
+								}
+								else{
+									steam64ID = playerID;
+									console.log(steam64ID);
+									doCSGOStats(channelID,searchID,bodySteam2.response.players[0].avatarfull,bodySteam2.response.players[0].personaname,playerID);
+								}
+							});
+						});
+
+
+				});
+			});
+
+				break;
+
 		}
 	}
 });

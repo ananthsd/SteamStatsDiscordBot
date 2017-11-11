@@ -5,7 +5,8 @@
   "main": "bot.js",
   "author": "Thedarkbobman",
   "dependencies": {
-    "discord.io": "^2.5.3",
+    "big-integer": "^1.6.25",
+    "discord.io": "github:woor/discord.io#gateway_v6",
     "steam-id-convertor": "^1.0.1",
     "winston": "^2.4.0"
   }
