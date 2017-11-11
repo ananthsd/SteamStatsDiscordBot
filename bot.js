@@ -141,10 +141,87 @@ function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl){
 														console.log(error);
 														console.log(response);
 													});
-
 				});
 
+	});
 
+
+}
+
+
+
+
+function doBanStatus(channelID, steam64ID, profilePic,name,customUrl){
+
+	https.get("https://api.steampowered.com/isteamuser/GetPlayerBans/v1/?key="+auth.steamKey+"&steamids=" + steam64ID, res => {
+		res.setEncoding("utf8");
+		let body = "";
+		res.on("data", data => {
+			body += data;
+		});
+		res.on("end", () => {
+			body = JSON.parse(body);
+			if(body.players[0]==undefined){
+					console.log("profile not found");
+				bot.sendMessage({
+					to: channelID,
+					message: "No Steam profile found."
+
+				});
+				return;
+			}
+			var fieldsArray = [];
+			if(body.players[0].CommunityBanned){
+				fieldsArray.push({
+						name: "Community",
+						value: "Banned"
+					});
+			}
+			if(body.players[0].VACBanned){
+				fieldsArray.push({
+						name: "VAC",
+						value: body.players[0].NumberOfVACBans+" bans. "+body.players[0].DaysSinceLastBan+" days since last VAC ban."
+					});
+			}
+			if(body.players[0].NumberOfGameBans>0){
+				fieldsArray.push({
+						name: "Game Bans",
+						value: body.players[0].NumberOfGameBans+" bans"
+					});
+			}
+			console.log(body.players[0].EconomyBan);
+			if((new String(body.players[0].EconomyBan)).valueOf()!=="none".valueOf()){
+				fieldsArray.push({
+						name: "Economy",
+						value: "Banned"
+					});
+			}
+			if(fieldsArray.length==0){
+				fieldsArray.push({
+						name: "Bans",
+						value: "None"
+					});
+			}
+			fieldsArray.unshift({
+					name: "Name",
+					value: name+""
+				});
+						bot.sendMessage({
+														to: channelID,
+														message: "Your wish is my command!",
+														embed: {
+															title: "Steam",
+															url: "http://steamcommunity.com/id/"+customUrl,
+															thumbnail: {
+																url: profilePic+""
+															},
+															fields: fieldsArray
+														}
+													}, function (error, response) {
+														console.log(error);
+														console.log(response);
+													});
+				});
 
 	});
 
@@ -194,7 +271,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		case 'help':
 			bot.sendMessage({
 				to: channelID,
-				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
 			});
 			break;
 		case 'dotaprofile':
@@ -371,6 +448,60 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
 				break;
 
+
+				case 'banstatus':
+
+				var playerID = message.substring(message.indexOf(' ') + 1);
+				console.log(playerID);
+				var steam64ID = 0;
+
+				https.get("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key="+auth.steamKey+"&vanityurl="+playerID, res => {
+					res.setEncoding("utf8");
+					let bodySteam = "";
+					res.on("data", steamData => {
+						bodySteam += steamData;
+					});
+					res.on("end", () => {
+						bodySteam = JSON.parse(bodySteam);
+						console.log("sucess = "+bodySteam.response.success);
+						var searchID = playerID;
+						if(bodySteam.response.success===1){
+							console.log("steamid = "+bodySteam.response.steamid);
+							steam64ID = (bodySteam.response.steamid);
+							searchID = steam64ID;
+						}
+
+							https.get("https://api.steampowered.com/isteamuser/getplayersummaries/v0002/?key="+auth.steamKey+"&steamids="+searchID, res => {
+								res.setEncoding("utf8");
+								let bodySteam2 = "";
+								res.on("data", steamData2 => {
+									bodySteam2 += steamData2;
+								});
+								res.on("end", () => {
+									//console.log(bodySteam2);
+									bodySteam2 = JSON.parse(bodySteam2);
+
+									if(bodySteam2.response.players.length==0){
+										bot.sendMessage({
+											to: channelID,
+											message: "No players found."
+
+										});
+										return;
+									}
+									else{
+										steam64ID = playerID;
+										console.log(steam64ID);
+										doBanStatus(channelID,searchID,bodySteam2.response.players[0].avatarfull,bodySteam2.response.players[0].personaname,playerID);
+									}
+								});
+							});
+
+
+					});
+				});
+
+					break;
 		}
 	}
 });
