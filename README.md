@@ -11,5 +11,7 @@ This is a bot I am working on that pulls information from Steam, OpenDota, and m
 
 `!csgostats <steam id (custom or not)>` to get csgo info.
 
+`!banstatus <steam id (custom or not)>` to get ban info.
+
 ## Anti-Spam
 The bot only accepts commands every 5 seconds for each user, so multiple people can send 1 command each within 5 seconds, but a single person can't send commands more than 1 per 5 seconds.
