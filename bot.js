@@ -25,7 +25,7 @@ const https = require("https");
 const heroStatsUrl =
 	"https://api.opendota.com/api/herostats";
 
-function doProfileStats( steam32ID,channelID, steam64ID){
+function doProfileStats( steam32ID,channelID, steam64ID,userID){
 	var wins = "";
 	var loss = "";
 	https.get("https://api.opendota.com/api/players/" + steam32ID , res => {
@@ -63,7 +63,7 @@ function doProfileStats( steam32ID,channelID, steam64ID){
 
 						bot.sendMessage({
 														to: channelID,
-														message: "Your wish is my command!",
+														message: "Your wish is my command "+"<@!" + userID + ">"+"!",
 														embed: {
 															title: "Steam",
 															url: "http://steamcommunity.com/id/"+steam64ID,
@@ -97,7 +97,7 @@ function doProfileStats( steam32ID,channelID, steam64ID){
 
 }
 
-function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl){
+function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl,userID){
 
 	https.get("https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key="+auth.steamKey+"&steamid=" + steam64ID +"&appid=730", res => {
 		res.setEncoding("utf8");
@@ -118,7 +118,7 @@ function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl){
 			}
 						bot.sendMessage({
 														to: channelID,
-														message: "Your wish is my command!",
+														message: "Your wish is my command "+"<@!" + userID + ">"+"!",
 														embed: {
 															title: "Steam",
 															url: "http://steamcommunity.com/id/"+customUrl,
@@ -151,7 +151,7 @@ function doCSGOStats(channelID, steam64ID, profilePic,name,customUrl){
 
 
 
-function doBanStatus(channelID, steam64ID, profilePic,name,customUrl){
+function doBanStatus(channelID, steam64ID, profilePic,name,customUrl,userID){
 
 	https.get("https://api.steampowered.com/isteamuser/GetPlayerBans/v1/?key="+auth.steamKey+"&steamids=" + steam64ID, res => {
 		res.setEncoding("utf8");
@@ -208,7 +208,7 @@ function doBanStatus(channelID, steam64ID, profilePic,name,customUrl){
 				});
 						bot.sendMessage({
 														to: channelID,
-														message: "Your wish is my command!",
+														message: "Your wish is my command "+"<@!" + userID + ">"+"!",
 														embed: {
 															title: "Steam",
 															url: "http://steamcommunity.com/id/"+customUrl,
@@ -243,7 +243,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 			if(Date.now()-userObj.time<5000){
 				bot.sendMessage({
 					to: userID,
-					message: "Hey " + user.toString() + ", you are sending commands too fast. I hope you aren't spamming, because that's mean."
+					message: "Hey " + "<@!" + userID + ">" + ", you are sending commands too fast. I hope you aren't spamming, because that's mean."
 				});
 				console.log("spam blocked");
 				return;
@@ -271,7 +271,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		case 'help':
 			bot.sendMessage({
 				to: channelID,
-				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+				message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
 			});
 			break;
 		case 'dotaprofile':
@@ -294,7 +294,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 						steam64ID = (bodySteam.response.steamid);
 						var steam32ID = converter.to32(bodySteam.response.steamid);
 						console.log("steam32ID="+steam32ID);
-						doProfileStats(steam32ID,channelID,playerID);
+						doProfileStats(steam32ID,channelID,playerID,userID);
 
 					}
 					else{
@@ -322,7 +322,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 									var steam32ID = converter.to32(playerID);
 									console.log("steam32ID="+steam32ID);
 
-									doProfileStats(steam32ID,channelID,steam64ID);
+									doProfileStats(steam32ID,channelID,steam64ID,userID);
 								}
 							});
 						});
@@ -354,7 +354,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
 						bot.sendMessage({
 							to: channelID,
-							message: "Hey " + user.toString() + ", that's not a valid hero."
+							message: "Hey " + "<@!" + userID + ">" + ", that's not a valid hero."
 
 						});
 						return;
@@ -376,7 +376,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 					} else {
 						attribute = "agility";
 					}
-					messageSend = "Hey " + user.toString() + ", " +
+					messageSend = "Hey " + "<@!" + userID + ">" + ", " +
 						body[index].localized_name
 
 						 + " is a " +
@@ -437,7 +437,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 								else{
 									steam64ID = playerID;
 									console.log(steam64ID);
-									doCSGOStats(channelID,searchID,bodySteam2.response.players[0].avatarfull,bodySteam2.response.players[0].personaname,playerID);
+									doCSGOStats(channelID,searchID,bodySteam2.response.players[0].avatarfull,bodySteam2.response.players[0].personaname,playerID,userID);
 								}
 							});
 						});
@@ -492,7 +492,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 									else{
 										steam64ID = playerID;
 										console.log(steam64ID);
-										doBanStatus(channelID,searchID,bodySteam2.response.players[0].avatarfull,bodySteam2.response.players[0].personaname,playerID);
+										doBanStatus(channelID,searchID,bodySteam2.response.players[0].avatarfull,bodySteam2.response.players[0].personaname,playerID,userID);
 									}
 								});
 							});
