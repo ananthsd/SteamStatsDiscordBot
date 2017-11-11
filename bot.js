@@ -186,7 +186,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 		case 'help':
 			bot.sendMessage({
 				to: channelID,
-				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+				message: "Hey " + user.toString() + ", here's what I can do.You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-id>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
 			});
 			break;
 		case 'dotaprofile':
