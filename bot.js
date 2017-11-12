@@ -5,7 +5,7 @@ var converter = require('steam-id-convertor');
 var bigInt = require("big-integer");
 var fs = require("fs");
 var schedule = require('node-schedule');
-
+const leven = require('leven');
 var j = schedule.scheduleJob('0 20 * * 2', function() {
   refreshDotaData();
 });
@@ -121,10 +121,10 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
         });
         return;
       }
-      var kd = bigInt("" + body.playerstats.stats[0].value).divmod(""+body.playerstats.stats[1].value);
-      console.log("kd: "+new String(kd.quotient));
-      var tempString = new String(kd.remainder/body.playerstats.stats[1].value);
-      var calculatedKD = new String(kd.quotient)+tempString.substring(tempString.indexOf("."));
+      var kd = bigInt("" + body.playerstats.stats[0].value).divmod("" + body.playerstats.stats[1].value);
+      console.log("kd: " + new String(kd.quotient));
+      var tempString = new String(kd.remainder / body.playerstats.stats[1].value);
+      var calculatedKD = new String(kd.quotient) + tempString.substring(tempString.indexOf("."));
 
       bot.sendMessage({
         to: channelID,
@@ -136,35 +136,36 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
             url: profilePic + ""
           },
           fields: [{
-            name: "Name",
-            value: name + ""
-          }, {
-            name: "Achievements",
-            value: "Has " + body.playerstats.achievements.length + " achievements!"
-          }, {
-            name: "Total Time Played",
-            value: numberWithCommas( String(bigInt("" + body.playerstats.stats[2].value).divide(3600))) + " hrs played."
-          },
-          {
-            name: "K/D",
-            value: "K/D is "+ numberWithCommas(String(body.playerstats.stats[0].value)) + "/"+numberWithCommas(String(body.playerstats.stats[1].value))+" = " + calculatedKD
-          },
-          {
-            name: "Bombs",
-            value: "Planted "+ numberWithCommas(String(body.playerstats.stats[3].value)) + " bombs and defused "+numberWithCommas(String(body.playerstats.stats[4].value))+" bombs."
-          },
-          {
-            name: "Wins/Money/Damage",
-            value: "Won "+ numberWithCommas(String(body.playerstats.stats[5].value)) + " times, earned $"+numberWithCommas(String(body.playerstats.stats[7].value))+", and did "+ numberWithCommas(String(body.playerstats.stats[6].value))+" damage."
-          },
-          {
-            name: "Misc. Kill Stats",
-            value: "Killed "+ numberWithCommas(String(body.playerstats.stats[25].value)) + " with headshots, "+numberWithCommas(String(body.playerstats.stats[26].value))+" with enemy weapons, "+numberWithCommas(String(body.playerstats.stats[9].value))+" with the knife, and "+ numberWithCommas(String(body.playerstats.stats[10].value))+" with HE nades."
-          },
-          {
-            name: "Other Stats",
-            value: "Played "+ numberWithCommas(String(body.playerstats.stats[48].value)) + " rounds, shot "+numberWithCommas(String(body.playerstats.stats[47].value))+" times, hit "+numberWithCommas(String(body.playerstats.stats[46].value))+" shots, killed "+ numberWithCommas(String(body.playerstats.stats[42].value))+" zoomed in snipers, donated " + numberWithCommas(String(body.playerstats.stats[38].value))+" weapons, and recieved "+ numberWithCommas(String(body.playerstats.stats[102].value))+" MVPs."
-          }]
+              name: "Name",
+              value: name + ""
+            }, {
+              name: "Achievements",
+              value: "Has " + body.playerstats.achievements.length + " achievements!"
+            }, {
+              name: "Total Time Played",
+              value: numberWithCommas(String(bigInt("" + body.playerstats.stats[2].value).divide(3600))) + " hrs played."
+            },
+            {
+              name: "K/D",
+              value: "K/D is " + numberWithCommas(String(body.playerstats.stats[0].value)) + "/" + numberWithCommas(String(body.playerstats.stats[1].value)) + " = " + calculatedKD
+            },
+            {
+              name: "Bombs",
+              value: "Planted " + numberWithCommas(String(body.playerstats.stats[3].value)) + " bombs and defused " + numberWithCommas(String(body.playerstats.stats[4].value)) + " bombs."
+            },
+            {
+              name: "Wins/Money/Damage",
+              value: "Won " + numberWithCommas(String(body.playerstats.stats[5].value)) + " times, earned $" + numberWithCommas(String(body.playerstats.stats[7].value)) + ", and did " + numberWithCommas(String(body.playerstats.stats[6].value)) + " damage."
+            },
+            {
+              name: "Misc. Kill Stats",
+              value: "Killed " + numberWithCommas(String(body.playerstats.stats[25].value)) + " with headshots, " + numberWithCommas(String(body.playerstats.stats[26].value)) + " with enemy weapons, " + numberWithCommas(String(body.playerstats.stats[9].value)) + " with the knife, and " + numberWithCommas(String(body.playerstats.stats[10].value)) + " with HE nades."
+            },
+            {
+              name: "Other Stats",
+              value: "Played " + numberWithCommas(String(body.playerstats.stats[48].value)) + " rounds, shot " + numberWithCommas(String(body.playerstats.stats[47].value)) + " times, hit " + numberWithCommas(String(body.playerstats.stats[46].value)) + " shots, killed " + numberWithCommas(String(body.playerstats.stats[42].value)) + " zoomed in snipers, donated " + numberWithCommas(String(body.playerstats.stats[38].value)) + " weapons, and recieved " + numberWithCommas(String(body.playerstats.stats[102].value)) + " MVPs."
+            }
+          ]
         }
       }, function(error, response) {
         console.log(error);
@@ -176,10 +177,11 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
 
 
 }
+
 function numberWithCommas(x) {
-    var parts = x.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
+  var parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
 }
 
 
@@ -272,6 +274,7 @@ function refreshDotaData() {
     res.on("end", () => {
 
       console.log("Hero Data Retrieved");
+      //  body = "[" + body.substring(body.indexOf("{") + 1, body.lastIndexOf("}")) + "]";
       fileData("heroes.json", body);
       console.log("Hero Data Written");
     });
@@ -285,6 +288,7 @@ function refreshDotaData() {
     res.on("end", () => {
 
       console.log("Item Data Retrieved");
+      //  body = "[" + body.substring(body.indexOf("{") + 1, body.lastIndexOf("}")) + "]";
       fileData("items.json", body);
       console.log("Item Data Written");
     });
@@ -297,6 +301,7 @@ function refreshDotaData() {
     });
     res.on("end", () => {
       console.log("Ability Data Retrieved");
+      //  body = "[" + body.substring(body.indexOf("{") + 1, body.lastIndexOf("}")) + "]";
       fileData("abilities.json", body);
       console.log("Ability Data Written");
     });
@@ -306,38 +311,127 @@ function refreshDotaData() {
 
 function fileData(savPath, newData) {
 
-	fs.exists(savPath, function (exists) {
-        if(exists)
-        {
-					fs.readFile(savPath, 'utf8', function(err, data) {
-						if (err) throw err;
-						//Do your processing, MD5, send a satellite to the moon, etc.
-						console.log("Data:" + data);
-						fs.writeFile(savPath, newData, function(err) {
-							if (err) throw err;
-							console.log('complete');
-						});
-					});
-        }else
-        {
-            fs.writeFile(savPath, {flag: 'wx'}, function (err, data)
-            {
-							fs.readFile(savPath, 'utf8', function(err, data) {
-								if (err) throw err;
-								//Do your processing, MD5, send a satellite to the moon, etc.
-								console.log("Data:" + data);
-								fs.writeFile(savPath, newData, function(err) {
-									if (err) throw err;
-									console.log('complete');
-								});
-							});
-            })
-        }
-    });
+  fs.exists(savPath, function(exists) {
+    if (exists) {
+      fs.readFile(savPath, 'utf8', function(err, data) {
+        if (err) throw err;
+        //Do your processing, MD5, send a satellite to the moon, etc.
+        console.log("Data:" + data);
+        fs.writeFile(savPath, newData, function(err) {
+          if (err) throw err;
+          console.log('complete');
+        });
+      });
+    } else {
+      fs.writeFile(savPath, {
+        flag: 'wx'
+      }, function(err, data) {
+        fs.readFile(savPath, 'utf8', function(err, data) {
+          if (err) throw err;
+          //Do your processing, MD5, send a satellite to the moon, etc.
+          console.log("Data:" + data);
+          fs.writeFile(savPath, newData, function(err) {
+            if (err) throw err;
+            console.log('complete');
+          });
+        });
+      })
+    }
+  });
 
 }
 
+function readDotaHeroFile(path, query,channelID,userID) {
+  var query = query.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
+  fs.readFile(path, 'utf8', function(err, data) {
+    if (err) throw err;
 
+    data = JSON.parse(data);
+    var tempHeroArray = [];
+
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+
+
+        var tempString = data[key].localized_name.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
+        if (tempString.indexOf(query) != -1) {
+          tempHeroArray.push(data[key]);
+          console.log("hero found:" + data[key].localized_name);
+        }
+
+      }
+    }
+    console.log("length:" + tempHeroArray.length);
+    if (tempHeroArray.length == 0) {
+      bot.sendMessage({
+        to: channelID,
+        message: "Sorry " + "<@!" + userID + ">" + ", I could not find a hero with that name.",
+      });
+      return;
+    }
+    var bestHero = tempHeroArray[0];
+
+    var bestDist = leven(query, tempHeroArray[0].localized_name.toLowerCase());
+    for (var i = 0; i < tempHeroArray.length; i++) {
+      if (leven(query, tempHeroArray[i].localized_name.toLowerCase()) < bestDist) {
+        bestHero = tempHeroArray[i];
+      }
+    }
+    var attribute = bestHero.primary_attr;
+    if (attribute.valueOf() == "str") {
+      attribute = "strength";
+    } else if (attribute.valueOf() == "int") {
+      attribute = "intelligence";
+    } else {
+      attribute = "agility";
+    }
+    var roles = bestHero.roles;
+    var rolesString = "";
+    for (var role in roles) {
+      rolesString = role + " ";
+    }
+    var projectileSpeed = "Projectile Speed: "
+    +bestHero.projectile_speed + "\n";
+    if (projectileSpeed == "0") {
+      projectile_speed = "";
+    }
+    bot.sendMessage({
+      to: channelID,
+      message: "Your wish is my command " + "<@!" + userID + ">" + "!",
+      embed: {
+        title: bestHero.localized_name,
+        thumbnail: {
+          url: "http://cdn.dota2.com/apps/dota2/images/heroes/" + bestHero.name.substring(bestHero.name.indexOf("hero_") + 5) + "_lg.png"
+        },
+        fields: [{
+          name: "Basic Info",
+          value: bestHero.localized_name + " is a " + bestHero.attack_type.toLowerCase() + " " + attribute + " hero."
+        }, {
+          name: "Roles",
+          value: rolesString
+        }, {
+          name: "Basic Stats",
+          value: "Base Health: " + bestHero.base_health + "; Base HP Regen: " + bestHero.base_health_regen + "\nBase Mana: " + bestHero.base_mana + "; Base Mana Regen: " + bestHero.base_mana_regen + "\nBase Armor: " + bestHero.base_armor + "\nBase Magic Resistance: " + bestHero.base_mr
+        }, {
+          name: "Attribute Stats",
+          value: "Base Strength: " + bestHero.base_str + "; Strength Gain: " + bestHero.str_gain + "\nBase Agility: " + bestHero.base_agi + "; Agility Gain: " + bestHero.agi_gain + "\nBase Intelligence: " + bestHero.base_int + "\nIntelligence Gain: " + bestHero.int_gain
+        }, {
+          name: "Attack Stats",
+          value: "Base Attack Range: " + bestHero.attack_range + "\n" + projectileSpeed + "Base Attack Rate: " + bestHero.attack_rate + " seconds"
+        }, {
+          name: "Movement Stats",
+          value: "Base Movement Speed: " + bestHero.move_speed + "\nTurn Rate: " + bestHero.turn_rate + " seconds\n"+"Legs: "+bestHero.legs+" legs"
+        }]
+      }
+    }, function(error, response) {
+      console.log(error);
+      console.log(response);
+    });
+
+
+  });
+
+}
 
 bot.on('message', function(user, userID, channelID, message, evt) {
   // Our bot needs to know if it will execute a command
@@ -439,67 +533,11 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         });
 
         break;
+
       case 'herostats':
-        var heroID = message.substring(message.indexOf(' ') + 1);
-        console.log(heroID);
+        var heroName = message.substring(message.indexOf(' ') + 1);
+        var testHero = readDotaHeroFile("heroes.json", heroName,channelID,userID);
 
-        https.get(heroStatsUrl, res => {
-          res.setEncoding("utf8");
-          let body = "";
-          res.on("data", data => {
-            body += data;
-          });
-          res.on("end", () => {
-            body = JSON.parse(body);
-
-            var index = heroID - 1;
-            var messageSend = "";
-
-            if ((heroID > 114 || heroID <= 0) && !(heroID == 119 || heroID == 120)) {
-
-              bot.sendMessage({
-                to: channelID,
-                message: "Hey " + "<@!" + userID + ">" + ", that's not a valid hero."
-
-              });
-              return;
-            }
-
-            if (heroID == 119) {
-              index = 113;
-
-            }
-            if (heroID == 120) {
-              index = 114;
-
-            }
-            var attribute = body[index].primary_attr;
-            if (attribute.valueOf() == "str") {
-              attribute = "strength";
-            } else if (attribute.valueOf() == "int") {
-              attribute = "intelligence";
-            } else {
-              attribute = "agility";
-            }
-            messageSend = "Hey " + "<@!" + userID + ">" + ", " +
-              body[index].localized_name
-
-              +
-              " is a " +
-              body[index].attack_type
-
-              .toLowerCase() + " " + attribute + " hero with " +
-              body[index].legs
-
-              +
-              " legs.";
-            bot.sendMessage({
-              to: channelID,
-              message: messageSend
-
-            });
-          });
-        });
         break;
       case 'csgostats':
 
@@ -609,7 +647,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         break;
 
       case 'refreshdotadata':
-			console.log(userID);
+        console.log(userID);
         if (userID == auth.adminID) {
           console.log("Refresh Started")
           refreshDotaData();
