@@ -121,6 +121,11 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
         });
         return;
       }
+      var kd = bigInt("" + body.playerstats.stats[0].value).divmod(""+body.playerstats.stats[1].value);
+      console.log("kd: "+new String(kd.quotient));
+      var tempString = new String(kd.remainder/body.playerstats.stats[1].value);
+      var calculatedKD = new String(kd.quotient)+tempString.substring(tempString.indexOf("."));
+
       bot.sendMessage({
         to: channelID,
         message: "Your wish is my command " + "<@!" + userID + ">" + "!",
@@ -135,10 +140,30 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
             value: name + ""
           }, {
             name: "Achievements",
-            value: "You have " + body.playerstats.achievements.length + " achievements!"
+            value: "Has " + body.playerstats.achievements.length + " achievements!"
           }, {
             name: "Total Time Played",
-            value: bigInt("" + body.playerstats.stats[2].value).divide(3600) + " hrs played."
+            value: numberWithCommas( String(bigInt("" + body.playerstats.stats[2].value).divide(3600))) + " hrs played."
+          },
+          {
+            name: "K/D",
+            value: "K/D is "+ numberWithCommas(String(body.playerstats.stats[0].value)) + "/"+numberWithCommas(String(body.playerstats.stats[1].value))+" = " + calculatedKD
+          },
+          {
+            name: "Bombs",
+            value: "Planted "+ numberWithCommas(String(body.playerstats.stats[3].value)) + " bombs and defused "+numberWithCommas(String(body.playerstats.stats[4].value))+" bombs."
+          },
+          {
+            name: "Wins/Money/Damage",
+            value: "Won "+ numberWithCommas(String(body.playerstats.stats[5].value)) + " times, earned $"+numberWithCommas(String(body.playerstats.stats[7].value))+", and done "+ numberWithCommas(String(body.playerstats.stats[6].value))+" damage."
+          },
+          {
+            name: "Misc. Kill Stats",
+            value: "Killed "+ numberWithCommas(String(body.playerstats.stats[25].value)) + " with headshots, "+numberWithCommas(String(body.playerstats.stats[26].value))+" with enemy weapons, "+numberWithCommas(String(body.playerstats.stats[9].value))+" with the knife, and "+ numberWithCommas(String(body.playerstats.stats[10].value))+" with HE nades."
+          },
+          {
+            name: "Other Stats",
+            value: "Played "+ numberWithCommas(String(body.playerstats.stats[48].value)) + " rounds, shot "+numberWithCommas(String(body.playerstats.stats[47].value))+" times, hit "+numberWithCommas(String(body.playerstats.stats[46].value))+" shots, killed "+ numberWithCommas(String(body.playerstats.stats[42].value))+" zoomed in snipers, donated " + numberWithCommas(String(body.playerstats.stats[38].value))+" weapons, and recieved "+ numberWithCommas(String(body.playerstats.stats[102].value))+" MVPs."
           }]
         }
       }, function(error, response) {
@@ -151,7 +176,11 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
 
 
 }
-
+function numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
 
 
 
