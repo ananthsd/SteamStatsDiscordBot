@@ -155,7 +155,7 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
           },
           {
             name: "Wins/Money/Damage",
-            value: "Won "+ numberWithCommas(String(body.playerstats.stats[5].value)) + " times, earned $"+numberWithCommas(String(body.playerstats.stats[7].value))+", and done "+ numberWithCommas(String(body.playerstats.stats[6].value))+" damage."
+            value: "Won "+ numberWithCommas(String(body.playerstats.stats[5].value)) + " times, earned $"+numberWithCommas(String(body.playerstats.stats[7].value))+", and did "+ numberWithCommas(String(body.playerstats.stats[6].value))+" damage."
           },
           {
             name: "Misc. Kill Stats",
