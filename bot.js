@@ -353,7 +353,7 @@ function readDotaHeroFile(path, query,channelID,userID) {
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
 
-
+      
         var tempString = data[key].localized_name.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
         if (tempString.indexOf(query) != -1) {
           tempHeroArray.push(data[key]);
@@ -391,10 +391,9 @@ function readDotaHeroFile(path, query,channelID,userID) {
     for (var role in roles) {
       rolesString = role + " ";
     }
-    var projectileSpeed = "Projectile Speed: "
-    +bestHero.projectile_speed + "\n";
+    var projectileSpeed = "Projectile Speed: " +bestHero.projectile_speed + "\n";
     if (projectileSpeed == "0") {
-      projectile_speed = "";
+      projectileSpeed = "";
     }
     bot.sendMessage({
       to: channelID,
@@ -433,7 +432,118 @@ function readDotaHeroFile(path, query,channelID,userID) {
   });
 
 }
+function readDotaItemFile(path, query,channelID,userID) {
+  var query = query.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
+  fs.readFile(path, 'utf8', function(err, data) {
+    if (err) throw err;
 
+    data = JSON.parse(data);
+    var tempItemArray = [];
+    var tempKeyArray = [];
+
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+
+        console.log(JSON.stringify(data[key]));
+        if(data[key].dname !== undefined){
+        var tempString = data[key].dname.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
+        if (tempString.indexOf(query) != -1) {
+          if(tempString.indexOf("recipe")==-1){
+           
+          tempItemArray.push(data[key]);
+            tempKeyArray.push(key);
+          console.log("item found:" + data[key].dname);
+          }
+        }
+        }
+        
+      }
+    }
+    console.log("length:" + tempItemArray.length);
+    if (tempItemArray.length == 0) {
+      bot.sendMessage({
+        to: channelID,
+        message: "Sorry " + "<@!" + userID + ">" + ", I could not find an item with that name.",
+      });
+      return;
+    }
+    var bestItem = tempItemArray[0];
+  var bestItemKey = tempKeyArray[0];
+    var bestDist = leven(query, tempItemArray[0].dname.toLowerCase());
+    for (var i = 0; i < tempItemArray.length; i++) {
+      if (leven(query, tempItemArray[i].dname.toLowerCase()) < bestDist) {
+        bestItem = tempItemArray[i];
+        bestItemKey = tempKeyArray[i];
+      }
+    }
+    var messageFields = [];
+    messageFields.push({
+          name: "Cost",
+          value: bestItem.cost+" Gold"
+        });
+    if(bestItem.desc !==""){
+       messageFields.push({
+          name: "Description",
+          value: bestItem.desc
+        });
+    }
+   if(bestItem.lore !==""){
+       messageFields.push({
+          name: "Lore",
+          value: bestItem.lore
+        });
+    }
+     if(bestItem.notes !==""){
+       messageFields.push({
+          name: "Notes",
+          value: bestItem.notes
+        });
+    }
+    if(bestItem.cd !==false){
+       messageFields.push({
+          name: "Cooldown",
+          value: bestItem.cd +" Seconds"
+        });
+    }
+    if(bestItem.components !==null){
+      var components = "";
+      var componentsArray = bestItem.components;
+      for(var tempComponent in componentsArray){
+        
+        if(data[tempComponent]!==undefined){
+        components+=data[tempComponent].dname+" ("+data[tempComponent].cost+")\n";
+        }
+      }
+      console.log("key:"+bestItemKey);
+      if(data["recipe_"+bestItemKey]!==undefined){
+      components+="Recipe"+" ("+data["recipe_"+bestItemKey].cost+")\n";
+      }
+      console.log("components:"+components);
+       messageFields.push({
+          name: "Components",
+          value: components
+        });
+    }
+  //console.log();
+    bot.sendMessage({
+      to: channelID,
+      message: "Your wish is my command " + "<@!" + userID + ">" + "!",
+      embed: {
+        title: bestItem.dname,
+        thumbnail: {
+          url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"),bestItem.img.indexOf("?3")) 
+        },
+        fields: messageFields
+      }
+    }, function(error, response) {
+      console.log(error);
+      console.log(response);
+    });
+
+
+  });
+
+}
 bot.on('message', function(user, userID, channelID, message, evt) {
   // Our bot needs to know if it will execute a command
   // It will listen for messages that will start with `!`
@@ -646,7 +756,13 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         });
 
         break;
+  case 'getitem':
+        console.log(userID);
+        var itemName = message.substring(message.indexOf(' ') + 1);
+        var testItem = readDotaItemFile("items.json", itemName,channelID,userID);
 
+
+        break;
       case 'refreshdotadata':
         console.log(userID);
         if (userID == auth.adminID) {
