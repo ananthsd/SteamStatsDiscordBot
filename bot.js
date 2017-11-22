@@ -357,7 +357,7 @@ function readDotaHeroFile(path, query,channelID,userID) {
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
 
-      
+
         var tempString = data[key].localized_name.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
         if (tempString.indexOf(query) != -1) {
           tempHeroArray.push(data[key]);
@@ -453,14 +453,14 @@ function readDotaItemFile(path, query,channelID,userID) {
         var tempString = data[key].dname.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
         if (tempString.indexOf(query) != -1) {
           if(tempString.indexOf("recipe")==-1){
-           
+
           tempItemArray.push(data[key]);
             tempKeyArray.push(key);
           console.log("item found:" + data[key].dname);
           }
         }
         }
-        
+
       }
     }
     console.log("length:" + tempItemArray.length);
@@ -510,12 +510,14 @@ function readDotaItemFile(path, query,channelID,userID) {
         });
     }
     if(bestItem.components !==null){
+
       var components = "";
       var componentsArray = bestItem.components;
       for(var tempComponent in componentsArray){
-        
-        if(data[tempComponent]!==undefined){
-        components+=data[tempComponent].dname+" ("+data[tempComponent].cost+")\n";
+        console.log("comp:"+componentsArray[tempComponent]);
+        if(data[componentsArray[tempComponent]]!==undefined){
+          console.log("component: "+data[componentsArray[tempComponent]].dname);
+        components+=data[componentsArray[tempComponent]].dname+" ("+data[componentsArray[tempComponent]].cost+")\n";
         }
       }
       console.log("key:"+bestItemKey);
@@ -525,7 +527,7 @@ function readDotaItemFile(path, query,channelID,userID) {
       console.log("components:"+components);
        messageFields.push({
           name: "Components",
-          value: components
+          value: components+""
         });
     }
   //console.log();
@@ -535,7 +537,7 @@ function readDotaItemFile(path, query,channelID,userID) {
       embed: {
         title: bestItem.dname,
         thumbnail: {
-          url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"),bestItem.img.indexOf("?3")) 
+          url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"),bestItem.img.indexOf("?3"))
         },
         fields: messageFields
       }
