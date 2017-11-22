@@ -28,6 +28,10 @@ bot.on('ready', function(evt) {
   logger.info('Logged in as: ');
   logger.info(bot.username + ' - (' + bot.id + ')');
 });
+bot.on('disconnect', function(erMsg, code) {
+    console.log('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
+    bot.connect();
+});
 const https = require("https");
 const heroStatsUrl =
   "https://api.opendota.com/api/herostats";
