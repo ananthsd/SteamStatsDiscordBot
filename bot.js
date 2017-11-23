@@ -29,8 +29,8 @@ bot.on('ready', function(evt) {
   logger.info(bot.username + ' - (' + bot.id + ')');
 });
 bot.on('disconnect', function(erMsg, code) {
-    console.log('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
-    bot.connect();
+  console.log('----- Bot disconnected from Discord with code', code, 'for reason:', erMsg, '-----');
+  bot.connect();
 });
 const https = require("https");
 const heroStatsUrl =
@@ -346,7 +346,7 @@ function fileData(savPath, newData) {
 
 }
 
-function readDotaHeroFile(path, query,channelID,userID) {
+function readDotaHeroFile(path, query, channelID, userID) {
   var query = query.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
   fs.readFile(path, 'utf8', function(err, data) {
     if (err) throw err;
@@ -383,27 +383,34 @@ function readDotaHeroFile(path, query,channelID,userID) {
       }
     }
     var attribute = bestHero.primary_attr;
+    var colorSet = 0;
     if (attribute.valueOf() == "str") {
       attribute = "strength";
+      colorSet = 10038562;
     } else if (attribute.valueOf() == "int") {
       attribute = "intelligence";
+      colorSet = 34266;
     } else {
       attribute = "agility";
+      colorSet = 306699;
     }
     var roles = bestHero.roles;
     var rolesString = "";
     for (var role in roles) {
-      rolesString = role + " ";
+      rolesString += roles[role] + "  ";
     }
-    var projectileSpeed = "Projectile Speed: " +bestHero.projectile_speed + "\n";
+    var projectileSpeed = "Projectile Speed: " + bestHero.projectile_speed + "\n";
     if (projectileSpeed == "0") {
       projectileSpeed = "";
     }
+
+
     bot.sendMessage({
       to: channelID,
       message: "Your wish is my command " + "<@!" + userID + ">" + "!",
       embed: {
         title: bestHero.localized_name,
+        color: colorSet,
         thumbnail: {
           url: "http://cdn.dota2.com/apps/dota2/images/heroes/" + bestHero.name.substring(bestHero.name.indexOf("hero_") + 5) + "_lg.png"
         },
@@ -424,7 +431,7 @@ function readDotaHeroFile(path, query,channelID,userID) {
           value: "Base Attack Range: " + bestHero.attack_range + "\n" + projectileSpeed + "Base Attack Rate: " + bestHero.attack_rate + " seconds"
         }, {
           name: "Movement Stats",
-          value: "Base Movement Speed: " + bestHero.move_speed + "\nTurn Rate: " + bestHero.turn_rate + " seconds\n"+"Legs: "+bestHero.legs+" legs"
+          value: "Base Movement Speed: " + bestHero.move_speed + "\nTurn Rate: " + bestHero.turn_rate + " seconds\n" + "Legs: " + bestHero.legs + " legs"
         }]
       }
     }, function(error, response) {
@@ -436,7 +443,8 @@ function readDotaHeroFile(path, query,channelID,userID) {
   });
 
 }
-function readDotaItemFile(path, query,channelID,userID) {
+
+function readDotaItemFile(path, query, channelID, userID) {
   var query = query.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
   fs.readFile(path, 'utf8', function(err, data) {
     if (err) throw err;
@@ -449,16 +457,16 @@ function readDotaItemFile(path, query,channelID,userID) {
       if (data.hasOwnProperty(key)) {
 
         console.log(JSON.stringify(data[key]));
-        if(data[key].dname !== undefined){
-        var tempString = data[key].dname.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
-        if (tempString.indexOf(query) != -1) {
-          if(tempString.indexOf("recipe")==-1){
+        if (data[key].dname !== undefined) {
+          var tempString = data[key].dname.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
+          if (tempString.indexOf(query) != -1) {
+            if (tempString.indexOf("recipe") == -1) {
 
-          tempItemArray.push(data[key]);
-            tempKeyArray.push(key);
-          console.log("item found:" + data[key].dname);
+              tempItemArray.push(data[key]);
+              tempKeyArray.push(key);
+              console.log("item found:" + data[key].dname);
+            }
           }
-        }
         }
 
       }
@@ -472,7 +480,7 @@ function readDotaItemFile(path, query,channelID,userID) {
       return;
     }
     var bestItem = tempItemArray[0];
-  var bestItemKey = tempKeyArray[0];
+    var bestItemKey = tempKeyArray[0];
     var bestDist = leven(query, tempItemArray[0].dname.toLowerCase());
     for (var i = 0; i < tempItemArray.length; i++) {
       if (leven(query, tempItemArray[i].dname.toLowerCase()) < bestDist) {
@@ -482,77 +490,76 @@ function readDotaItemFile(path, query,channelID,userID) {
     }
     var messageFields = [];
     messageFields.push({
-          name: "Cost",
-          value: bestItem.cost+" Gold"
-        });
-    if(bestItem.desc !==""){
-       messageFields.push({
-          name: "Description",
-          value: bestItem.desc
-        });
+      name: "Cost",
+      value: bestItem.cost + " Gold"
+    });
+    if (bestItem.desc !== "") {
+      messageFields.push({
+        name: "Description",
+        value: bestItem.desc
+      });
     }
-   if(bestItem.lore !==""){
-       messageFields.push({
-          name: "Lore",
-          value: bestItem.lore
-        });
+    if (bestItem.lore !== "") {
+      messageFields.push({
+        name: "Lore",
+        value: bestItem.lore
+      });
     }
-     if(bestItem.notes !==""){
-       messageFields.push({
-          name: "Notes",
-          value: bestItem.notes
-        });
+    if (bestItem.notes !== "") {
+      messageFields.push({
+        name: "Notes",
+        value: bestItem.notes
+      });
     }
-    if(bestItem.cd !==false){
-       messageFields.push({
-          name: "Cooldown",
-          value: bestItem.cd +" Seconds"
-        });
+    if (bestItem.cd !== false) {
+      messageFields.push({
+        name: "Cooldown",
+        value: bestItem.cd + " Seconds"
+      });
     }
-    if(bestItem.components !==null){
+    if (bestItem.components !== null) {
 
       var components = "";
       var componentsArray = bestItem.components;
-      for(var tempComponent in componentsArray){
-        console.log("comp:"+componentsArray[tempComponent]);
-        if(data[componentsArray[tempComponent]]!==undefined){
-          console.log("component: "+data[componentsArray[tempComponent]].dname);
-        components+=data[componentsArray[tempComponent]].dname+" ("+data[componentsArray[tempComponent]].cost+")\n";
+      for (var tempComponent in componentsArray) {
+        console.log("comp:" + componentsArray[tempComponent]);
+        if (data[componentsArray[tempComponent]] !== undefined) {
+          console.log("component: " + data[componentsArray[tempComponent]].dname);
+          components += data[componentsArray[tempComponent]].dname + " (" + data[componentsArray[tempComponent]].cost + ")\n";
         }
       }
-      console.log("key:"+bestItemKey);
-      if(data["recipe_"+bestItemKey]!==undefined){
-      components+="Recipe"+" ("+data["recipe_"+bestItemKey].cost+")\n";
+      console.log("key:" + bestItemKey);
+      if (data["recipe_" + bestItemKey] !== undefined) {
+        components += "Recipe" + " (" + data["recipe_" + bestItemKey].cost + ")\n";
       }
-      console.log("components:"+components);
-       messageFields.push({
-          name: "Components",
-          value: components+""
-        });
+      console.log("components:" + components);
+      messageFields.push({
+        name: "Components",
+        value: components + ""
+      });
     }
     var attribString = "";
     var attribArray = bestItem.attrib;
-    for(var attribute in attribArray){
-      if(attribArray[attribute].footer !=undefined){
-        attribString += attribArray[attribute].header+""+attribArray[attribute].value+" " + attribArray[attribute].footer;
+    for (var attribute in attribArray) {
+      if (attribArray[attribute].footer != undefined) {
+        attribString += attribArray[attribute].header + "" + attribArray[attribute].value + " " + attribArray[attribute].footer;
+      } else {
+        attribString += attribArray[attribute].header + " " + attribArray[attribute].value;
       }
-      else{
-        attribString += attribArray[attribute].header+" "+attribArray[attribute].value;
-      }
-      attribString +="\n";
+      attribString += "\n";
     }
     messageFields.push({
-       name: "Item Attributes",
-       value: attribString
-     });
-  //console.log();
+      name: "Item Attributes",
+      value: attribString
+    });
+    //console.log();
     bot.sendMessage({
       to: channelID,
       message: "Your wish is my command " + "<@!" + userID + ">" + "!",
       embed: {
         title: bestItem.dname,
         thumbnail: {
-          url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"),bestItem.img.indexOf("?3"))
+          url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"), bestItem.img.indexOf("?3"))
         },
         fields: messageFields
       }
@@ -668,7 +675,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
 
       case 'herostats':
         var heroName = message.substring(message.indexOf(' ') + 1);
-        var testHero = readDotaHeroFile("heroes.json", heroName,channelID,userID);
+        var testHero = readDotaHeroFile("heroes.json", heroName, channelID, userID);
 
         break;
       case 'csgostats':
@@ -777,10 +784,10 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         });
 
         break;
-  case 'getitem':
+      case 'getitem':
         console.log(userID);
         var itemName = message.substring(message.indexOf(' ') + 1);
-        var testItem = readDotaItemFile("items.json", itemName,channelID,userID);
+        var testItem = readDotaItemFile("items.json", itemName, channelID, userID);
 
 
         break;
