@@ -418,7 +418,7 @@ function readDotaHeroFile(path, query,channelID,userID) {
           value: "Base Health: " + bestHero.base_health + "; Base HP Regen: " + bestHero.base_health_regen + "\nBase Mana: " + bestHero.base_mana + "; Base Mana Regen: " + bestHero.base_mana_regen + "\nBase Armor: " + bestHero.base_armor + "\nBase Magic Resistance: " + bestHero.base_mr
         }, {
           name: "Attribute Stats",
-          value: "Base Strength: " + bestHero.base_str + "; Strength Gain: " + bestHero.str_gain + "\nBase Agility: " + bestHero.base_agi + "; Agility Gain: " + bestHero.agi_gain + "\nBase Intelligence: " + bestHero.base_int + "\nIntelligence Gain: " + bestHero.int_gain
+          value: "Base Strength: " + bestHero.base_str + "; Strength Gain: " + bestHero.str_gain + "\nBase Agility: " + bestHero.base_agi + "; Agility Gain: " + bestHero.agi_gain + "\nBase Intelligence: " + bestHero.base_int + "; Intelligence Gain: " + bestHero.int_gain
         }, {
           name: "Attack Stats",
           value: "Base Attack Range: " + bestHero.attack_range + "\n" + projectileSpeed + "Base Attack Rate: " + bestHero.attack_rate + " seconds"
@@ -530,6 +530,21 @@ function readDotaItemFile(path, query,channelID,userID) {
           value: components+""
         });
     }
+    var attribString = "";
+    var attribArray = bestItem.attrib;
+    for(var attribute in attribArray){
+      if(attribArray[attribute].footer !=undefined){
+        attribString += attribArray[attribute].header+""+attribArray[attribute].value+" " + attribArray[attribute].footer;
+      }
+      else{
+        attribString += attribArray[attribute].header+" "+attribArray[attribute].value;
+      }
+      attribString +="\n";
+    }
+    messageFields.push({
+       name: "Item Attributes",
+       value: attribString
+     });
   //console.log();
     bot.sendMessage({
       to: channelID,
