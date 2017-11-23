@@ -559,6 +559,7 @@ function readDotaItemFile(path, query, channelID, userID) {
       message: "Your wish is my command " + "<@!" + userID + ">" + "!",
       embed: {
         title: bestItem.dname,
+          url: "https://dota2.gamepedia.com/"+bestItem.dname.split(' ').join('_'),
         thumbnail: {
           url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"), bestItem.img.indexOf("?3"))
         },
@@ -612,7 +613,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
       case 'help':
         bot.sendMessage({
           to: channelID,
-          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!herostats <hero-name>` to see hero stats.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
         });
         break;
       case 'dotaprofile':
@@ -674,7 +675,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
 
         break;
 
-      case 'herostats':
+      case 'gethero':
         var heroName = message.substring(message.indexOf(' ') + 1);
         var testHero = readDotaHeroFile("heroes.json", heroName, channelID, userID);
 
