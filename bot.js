@@ -410,6 +410,7 @@ function readDotaHeroFile(path, query, channelID, userID) {
       message: "Your wish is my command " + "<@!" + userID + ">" + "!",
       embed: {
         title: bestHero.localized_name,
+        url: "https://dota2.gamepedia.com/"+bestHero.localized_name.split(' ').join('_'),
         color: colorSet,
         thumbnail: {
           url: "http://cdn.dota2.com/apps/dota2/images/heroes/" + bestHero.name.substring(bestHero.name.indexOf("hero_") + 5) + "_lg.png"
