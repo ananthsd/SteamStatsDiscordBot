@@ -5,9 +5,9 @@ This is a bot I am working on that pulls information from Steam, OpenDota, and m
 
 `!help` to see available commands.
 
-`!gethero <hero-id>` to see hero info.
+`!gethero <hero-name>` to see hero info.
 
-`!getitem <hero-id>` to see item info.
+`!getitem <item-name>` to see item info.
 
 `!dotaprofile <steam id (custom or not)>` to get basic dota info.
 
