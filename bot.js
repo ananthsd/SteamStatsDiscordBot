@@ -604,7 +604,7 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
     });
     return;
   }
-  if(!isFinite(line)||!isFinite(min)||!isFinite(limaxne)||!isFinite(numberOfNumbers)){
+  if(!isFinite(line)||!isFinite(min)||!isFinite(max)||!isFinite(numberOfNumbers)){
     bot.sendMessage({
       to: channelID,
       message: "Hey " + "<@!" + userID + ">" + ",  your parameters are weird.",
