@@ -609,7 +609,7 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
       var tempNum = newData.substring(index,index+digits);
       if(parseInt(tempNum)>=parseInt(min)&&parseInt(tempNum)<=parseInt(max)){
           if(repeats=='false'){
-            if(!numbers.includes(tempNum)){
+            if(numbers.indexOf(tempNum)==-1){
               numbers.push(tempNum);
               numberString+=" `"+tempNum+"`";
             x++;
