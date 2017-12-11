@@ -574,6 +574,72 @@ function readDotaItemFile(path, query, channelID, userID) {
   });
 
 }
+
+function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userID,repeats) {
+
+  fs.readFile(path, 'utf8', function(err, data) {
+    if (err) throw err;
+    console.log("min:"+min+"; max:"+max+"; min>max:"+min>max+"");
+    if(parseInt(min)>parseInt(max)||line<101||line>150){
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ", your parameters are off.",
+      });
+      return;
+    }
+    if(repeats=='false'){
+    if(parseInt(max)-parseInt(min)<numberOfNumbers){
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ", your parameters make it impossible not to have repeats.",
+      });
+      return;
+
+    }
+  }
+    var numbers = [];
+    var numberString = "";
+    var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
+    var newData = data.substring((line-101)*40);
+    var x = 0;
+    var index = 0;
+    console.log("min:"+min+"; max:"+max+"; min>max:"+min>max);
+    console.log("digits: "+digits+"; "+"numOfNum: "+numberOfNumbers+"; "+"line: "+line+"; "+"min: "+min+"; "+"max: "+max+"; ");
+    while(x<numberOfNumbers){
+      var tempNum = newData.substring(index,index+digits);
+      if(parseInt(tempNum)>=parseInt(min)&&parseInt(tempNum)<=parseInt(max)){
+          if(repeats=='false'){
+            if(!numbers.includes(tempNum)){
+              numbers.push(tempNum);
+              numberString+=" `"+tempNum+"`";
+            x++;
+            }
+          }
+          else{
+          numbers.push(tempNum);
+          numberString+=" `"+tempNum+"`";
+        x++;
+      }
+      }
+    index+=digits;
+    }
+
+
+
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ", your numbers are the following: "+numberString,
+      });
+      return;
+
+
+
+
+  });
+
+}
+
+
 bot.on('message', function(user, userID, channelID, message, evt) {
   // Our bot needs to know if it will execute a command
   // It will listen for messages that will start with `!`
@@ -613,7 +679,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
       case 'help':
         bot.sendMessage({
           to: channelID,
-          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
         });
         break;
       case 'dotaprofile':
@@ -802,6 +868,18 @@ bot.on('message', function(user, userID, channelID, message, evt) {
 
 
         break;
+        case 'randtablenum':
+          console.log(userID);
+
+            var input = message.substring(message.indexOf(' ') + 1);
+            var params = input.split(" ");
+
+
+randomStatNumbers("ap_stat_table_b.txt", params[0], params[1],params[2],params[3], channelID, userID,params[4])
+
+
+          break;
+
     }
   }
 });
