@@ -590,7 +590,7 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
       return;
     }
     if(repeats=='false'){
-    if(max-min)<numberOfNumbers){
+    if((max-min)<numberOfNumbers){
       bot.sendMessage({
         to: channelID,
         message: "Hey " + "<@!" + userID + ">" + ", your parameters make it impossible not to have repeats.",
