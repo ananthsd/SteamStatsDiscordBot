@@ -597,6 +597,20 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
 
     }
   }
+  if(!repeats=='true'||!repeats=='false'){
+    bot.sendMessage({
+      to: channelID,
+      message: "Hey " + "<@!" + userID + ">" + ", I don't know if you want repeats or not.",
+    });
+    return;
+  }
+  if(!isFinite(line)||!isFinite(min)||!isFinite(limaxne)||!isFinite(numberOfNumbers)){
+    bot.sendMessage({
+      to: channelID,
+      message: "Hey " + "<@!" + userID + ">" + ",  your parameters are weird.",
+    });
+    return;
+  }
   var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
   if(((line-101)*40+digits*numberOfNumbers)>=2000){
     bot.sendMessage({
