@@ -17,5 +17,7 @@ This is a bot I am working on that pulls information from Steam, OpenDota, and m
 
 `!refreshdotadata` only works if your id matches the one in auth.json. It takes dota data from OpenDota's github so the bot doesn't have to download it each time it wants to look up hero/item/ability info.
 
+`!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.
+
 ## Anti-Spam
 The bot only accepts commands every 5 seconds for each user, so multiple people can send 1 command each within 5 seconds, but a single person can't send commands more than 1 per 5 seconds.
