@@ -611,6 +611,13 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
     });
     return;
   }
+  if(parseInt(numberOfNumbers)<=0){
+    bot.sendMessage({
+      to: channelID,
+      message: "Hey " + "<@!" + userID + ">" + ",  you wont get any nuumbers this way.",
+    });
+    return;
+  }
   var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
   if(((line-101)*40+digits*numberOfNumbers)>=2000){
     bot.sendMessage({
