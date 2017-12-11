@@ -580,6 +580,8 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
   fs.readFile(path, 'utf8', function(err, data) {
     if (err) throw err;
     console.log("min:"+min+"; max:"+max+"; min>max:"+min>max+"");
+    max = Math.ceil(parseInt(max));
+    min = Math.ceil(parseInt(min);
     if(parseInt(min)>parseInt(max)||line<101||line>150){
       bot.sendMessage({
         to: channelID,
@@ -588,7 +590,7 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
       return;
     }
     if(repeats=='false'){
-    if(parseInt(max)-parseInt(min)<numberOfNumbers){
+    if(max-min)<numberOfNumbers){
       bot.sendMessage({
         to: channelID,
         message: "Hey " + "<@!" + userID + ">" + ", your parameters make it impossible not to have repeats.",
