@@ -597,9 +597,18 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
 
     }
   }
+  var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
+  if(((line-101)*40+digits*numberOfNumbers)>=2000){
+    bot.sendMessage({
+      to: channelID,
+      message: "Hey " + "<@!" + userID + ">" + ", there aren't enough numbers in the table to satisfy your request.",
+    });
+    return;
+
+  }
     var numbers = [];
     var numberString = "";
-    var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
+
     var newData = data.substring((line-101)*40);
     var x = 0;
     var index = 0;
