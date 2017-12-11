@@ -581,7 +581,7 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
     if (err) throw err;
     console.log("min:"+min+"; max:"+max+"; min>max:"+min>max+"");
     max = Math.ceil(parseInt(max));
-    min = Math.ceil(parseInt(min);
+    min = Math.ceil(parseInt(min));
     if(parseInt(min)>parseInt(max)||line<101||line>150){
       bot.sendMessage({
         to: channelID,
