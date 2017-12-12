@@ -70,9 +70,45 @@ function doProfileStats(steam32ID, channelID, steam64ID, userID) {
           wins = body2.win;
           loss = body2.lose;
           console.log(body.profile.account_id);
-
-
-          bot.sendMessage({
+          
+https.get("https://api.opendota.com/api/players/"+steam32ID+"/recentMatches", res => {
+    res.setEncoding("utf8");
+    let tempData = "";
+    res.on("data", data3 => {
+      tempData += data3;
+    });
+    res.on("end", () => {
+      tempData = JSON.parse(tempData);
+     // console.log(tempData);
+      var match = tempData[0];
+      //console.log("match"+match);
+      var fieldsArray = [{
+                name: "Name",
+                value: body.profile.personaname + ""
+              }, {
+                name: "Estimated MMR",
+                value: body.mmr_estimate.estimate + ""
+              }, {
+                name: "Win/Loss",
+                value: "Wins: " + wins + " Losses: " + loss
+              }];
+      if(match!==undefined){
+        var matchInfo = "";
+        if(match.radiant_win==='true'){
+        matchInfo+="**RADIENT VICTORY:**\n";
+        }
+        else{
+        matchInfo+="**DIRE VICTORY:**\n";  
+        }
+        matchInfo+="["+match.match_id+"](https://www.opendota.com/matches/"+match.match_id+")\nk-d-a: "+match.kills+"-"+match.deaths+"-"+match.assists+"\n"+match.xp_per_min+" xpm and "+match.gold_per_min+" gpm";
+        
+        fieldsArray.push({
+                name: "Last Match",
+                value: matchInfo
+              });
+      }
+      if (body.playerstats === undefined) {
+        bot.sendMessage({
             to: channelID,
             message: "Your wish is my command " + "<@!" + userID + ">" + "!",
             embed: {
@@ -82,21 +118,18 @@ function doProfileStats(steam32ID, channelID, steam64ID, userID) {
               thumbnail: {
                 url: body.profile.avatarfull + ""
               },
-              fields: [{
-                name: "Name",
-                value: body.profile.personaname + ""
-              }, {
-                name: "Estimated MMR",
-                value: body.mmr_estimate.estimate + ""
-              }, {
-                name: "Win/Loss",
-                value: "Wins: " + wins + " Losses: " + loss
-              }]
+              fields: fieldsArray
             }
           }, function(error, response) {
             console.log(error);
             console.log(response);
           });
+        
+      }
+    
+    });
+
+  });
 
         });
       });
@@ -107,6 +140,8 @@ function doProfileStats(steam32ID, channelID, steam64ID, userID) {
 
 }
 
+
+  
 function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) {
 
   https.get("https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + auth.steamKey + "&steamid=" + steam64ID + "&appid=730", res => {
@@ -345,7 +380,7 @@ function fileData(savPath, newData) {
   });
 
 }
-
+ 
 function readDotaHeroFile(path, query, channelID, userID) {
   var query = query.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
   fs.readFile(path, 'utf8', function(err, data) {
