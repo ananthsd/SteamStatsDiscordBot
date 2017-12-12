@@ -645,14 +645,21 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
   }
     var numbers = [];
     var numberString = "";
-
+    var preString = "Hey " + "<@!" + userID + ">"+ ", your numbers are the following: ";
     var newData = data.substring((line-101)*40);
     var x = 0;
     var index = 0;
     console.log("min:"+min+"; max:"+max+"; min>max:"+min>max);
     console.log("digits: "+digits+"; "+"numOfNum: "+numberOfNumbers+"; "+"line: "+line+"; "+"min: "+min+"; "+"max: "+max+"; ");
     while(x<numberOfNumbers){
+
+
       var tempNum = newData.substring(index,index+digits);
+      if(tempNum===""){
+        preString = "So uh... There aren't enough numbers left for you to get `"+numberOfNumbers+"` so I'll give you what I have "+ "<@!" + userID + ">"+" :(\n";
+        break;
+      }
+        console.log("val:"+x+"vale2:"+tempNum);
       if(parseInt(tempNum)>=parseInt(min)&&parseInt(tempNum)<=parseInt(max)){
           if(repeats=='false'){
             if(numbers.indexOf(tempNum)==-1){
@@ -674,7 +681,7 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
 
       bot.sendMessage({
         to: channelID,
-        message: "Hey " + "<@!" + userID + ">" + ", your numbers are the following: "+numberString,
+        message: preString +numberString,
       });
       return;
 
