@@ -613,7 +613,8 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
 
     }
   }
-  if(!repeats=='true'||!repeats=='false'){
+  console.log("rep:"+repeats);
+  if(repeats===undefined ||typeof repeats !== 'boolean'){
     bot.sendMessage({
       to: channelID,
       message: "Hey " + "<@!" + userID + ">" + ", I don't know if you want repeats or not.",
