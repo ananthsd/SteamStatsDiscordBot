@@ -574,12 +574,26 @@ function readDotaItemFile(path, query, channelID, userID) {
   });
 
 }
-
+function isInt(value) {
+  var x;
+  if (isNaN(value)) {
+    return false;
+  }
+  x = parseFloat(value);
+  return (x | 0) === x;
+}
 function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userID,repeats) {
 
   fs.readFile(path, 'utf8', function(err, data) {
     if (err) throw err;
     console.log("min:"+min+"; max:"+max+"; min>max:"+min>max+"");
+    if(!isInt(line)||!isInt(min)||!isInt(max)||!isInt(numberOfNumbers)){
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ", no decimals pls.",
+      });
+      return;
+    }
     max = Math.ceil(parseInt(max));
     min = Math.ceil(parseInt(min));
     if(parseInt(min)>parseInt(max)||line<101||line>150){
