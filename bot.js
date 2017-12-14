@@ -82,12 +82,36 @@ https.get("https://api.opendota.com/api/players/"+steam32ID+"/recentMatches", re
      // console.log(tempData);
       var match = tempData[0];
       //console.log("match"+match);
+      var rankString = "";
+      console.log("rank:"+body.rank_tier+"");
+      if(body.rank_tier!==null){
+        rankString+="Actual: ";
+      if((body.rank_tier+"").substring(0,1)==='1'){
+        rankString+="Herald [";
+      }
+      if((body.rank_tier+"").substring(0,1)==='2'){
+        rankString+="Guardian ["
+      }if((body.rank_tier+"").substring(0,1)==='3'){
+        rankString+="Crusader ["
+      }
+      if((body.rank_tier+"").substring(0,1)==='4'){
+        rankString+="Archon ["
+      }
+      if((body.rank_tier+"").substring(0,1)==='5'){
+        rankString+="Legend ["
+      }if((body.rank_tier+"").substring(0,1)==='6'){
+        rankString+="Ancient ["
+      }if((body.rank_tier+"").substring(0,1)==='7'){
+        rankString+="Divine ["
+      }
+        rankString+=(body.rank_tier+"").substring(1)+"]; "
+    }
       var fieldsArray = [{
                 name: "Name",
                 value: body.profile.personaname + ""
               }, {
-                name: "Estimated MMR",
-                value: body.mmr_estimate.estimate + ""
+                name: "MMR",
+                value: rankString+"Estimated: "+body.mmr_estimate.estimate + ""
               }, {
                 name: "Win/Loss",
                 value: "Wins: " + wins + " Losses: " + loss
