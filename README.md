@@ -19,5 +19,6 @@ This is a bot I am working on that pulls information from Steam, OpenDota, and m
 
 `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.
 
+`!playercounts` to see how many players are on steam and in steam games.
 ## Anti-Spam
 The bot only accepts commands every 5 seconds for each user, so multiple people can send 1 command each within 5 seconds, but a single person can't send commands more than 1 per 5 seconds.
