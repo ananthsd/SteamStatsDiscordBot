@@ -70,90 +70,92 @@ function doProfileStats(steam32ID, channelID, steam64ID, userID) {
           wins = body2.win;
           loss = body2.lose;
           console.log(body.profile.account_id);
-          
-https.get("https://api.opendota.com/api/players/"+steam32ID+"/recentMatches", res => {
-    res.setEncoding("utf8");
-    let tempData = "";
-    res.on("data", data3 => {
-      tempData += data3;
-    });
-    res.on("end", () => {
-      tempData = JSON.parse(tempData);
-     // console.log(tempData);
-      var match = tempData[0];
-      //console.log("match"+match);
-      var rankString = "";
-      console.log("rank:"+body.rank_tier+"");
-      if(body.rank_tier!==null){
-        rankString+="Actual: ";
-      if((body.rank_tier+"").substring(0,1)==='1'){
-        rankString+="Herald [";
-      }
-      if((body.rank_tier+"").substring(0,1)==='2'){
-        rankString+="Guardian ["
-      }if((body.rank_tier+"").substring(0,1)==='3'){
-        rankString+="Crusader ["
-      }
-      if((body.rank_tier+"").substring(0,1)==='4'){
-        rankString+="Archon ["
-      }
-      if((body.rank_tier+"").substring(0,1)==='5'){
-        rankString+="Legend ["
-      }if((body.rank_tier+"").substring(0,1)==='6'){
-        rankString+="Ancient ["
-      }if((body.rank_tier+"").substring(0,1)==='7'){
-        rankString+="Divine ["
-      }
-        rankString+=(body.rank_tier+"").substring(1)+"]; "
-    }
-      var fieldsArray = [{
+
+          https.get("https://api.opendota.com/api/players/" + steam32ID + "/recentMatches", res => {
+            res.setEncoding("utf8");
+            let tempData = "";
+            res.on("data", data3 => {
+              tempData += data3;
+            });
+            res.on("end", () => {
+              tempData = JSON.parse(tempData);
+              // console.log(tempData);
+              var match = tempData[0];
+              //console.log("match"+match);
+              var rankString = "";
+              console.log("rank:" + body.rank_tier + "");
+              if (body.rank_tier !== null) {
+                rankString += "Actual: ";
+                if ((body.rank_tier + "").substring(0, 1) === '1') {
+                  rankString += "Herald [";
+                }
+                if ((body.rank_tier + "").substring(0, 1) === '2') {
+                  rankString += "Guardian ["
+                }
+                if ((body.rank_tier + "").substring(0, 1) === '3') {
+                  rankString += "Crusader ["
+                }
+                if ((body.rank_tier + "").substring(0, 1) === '4') {
+                  rankString += "Archon ["
+                }
+                if ((body.rank_tier + "").substring(0, 1) === '5') {
+                  rankString += "Legend ["
+                }
+                if ((body.rank_tier + "").substring(0, 1) === '6') {
+                  rankString += "Ancient ["
+                }
+                if ((body.rank_tier + "").substring(0, 1) === '7') {
+                  rankString += "Divine ["
+                }
+                rankString += (body.rank_tier + "").substring(1) + "]; "
+              }
+              var fieldsArray = [{
                 name: "Name",
                 value: body.profile.personaname + ""
               }, {
                 name: "MMR",
-                value: rankString+"Estimated: "+body.mmr_estimate.estimate + ""
+                value: rankString + "Estimated: " + body.mmr_estimate.estimate + ""
               }, {
                 name: "Win/Loss",
                 value: "Wins: " + wins + " Losses: " + loss
               }];
-      if(match!==undefined){
-        var matchInfo = "";
-        if(match.radiant_win==='true'){
-        matchInfo+="**RADIENT VICTORY:**\n";
-        }
-        else{
-        matchInfo+="**DIRE VICTORY:**\n";  
-        }
-        matchInfo+="["+match.match_id+"](https://www.opendota.com/matches/"+match.match_id+")\nk-d-a: "+match.kills+"-"+match.deaths+"-"+match.assists+"\n"+match.xp_per_min+" xpm and "+match.gold_per_min+" gpm";
-        
-        fieldsArray.push({
-                name: "Last Match",
-                value: matchInfo
-              });
-      }
-      if (body.playerstats === undefined) {
-        bot.sendMessage({
-            to: channelID,
-            message: "Your wish is my command " + "<@!" + userID + ">" + "!",
-            embed: {
-              title: "Steam",
-              url: "http://steamcommunity.com/id/" + steam64ID,
-              description: "[OpenDota](https://www.opendota.com/players/" + body.profile.account_id + ")",
-              thumbnail: {
-                url: body.profile.avatarfull + ""
-              },
-              fields: fieldsArray
-            }
-          }, function(error, response) {
-            console.log(error);
-            console.log(response);
-          });
-        
-      }
-    
-    });
+              if (match !== undefined) {
+                var matchInfo = "";
+                if (match.radiant_win === 'true') {
+                  matchInfo += "**RADIENT VICTORY:**\n";
+                } else {
+                  matchInfo += "**DIRE VICTORY:**\n";
+                }
+                matchInfo += "[" + match.match_id + "](https://www.opendota.com/matches/" + match.match_id + ")\nk-d-a: " + match.kills + "-" + match.deaths + "-" + match.assists + "\n" + match.xp_per_min + " xpm and " + match.gold_per_min + " gpm";
 
-  });
+                fieldsArray.push({
+                  name: "Last Match",
+                  value: matchInfo
+                });
+              }
+              if (body.playerstats === undefined) {
+                bot.sendMessage({
+                  to: channelID,
+                  message: "Your wish is my command " + "<@!" + userID + ">" + "!",
+                  embed: {
+                    title: "Steam",
+                    url: "http://steamcommunity.com/id/" + steam64ID,
+                    description: "[OpenDota](https://www.opendota.com/players/" + body.profile.account_id + ")",
+                    thumbnail: {
+                      url: body.profile.avatarfull + ""
+                    },
+                    fields: fieldsArray
+                  }
+                }, function(error, response) {
+                  console.log(error);
+                  console.log(response);
+                });
+
+              }
+
+            });
+
+          });
 
         });
       });
@@ -165,7 +167,7 @@ https.get("https://api.opendota.com/api/players/"+steam32ID+"/recentMatches", re
 }
 
 
-  
+
 function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) {
 
   https.get("https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + auth.steamKey + "&steamid=" + steam64ID + "&appid=730", res => {
@@ -404,7 +406,7 @@ function fileData(savPath, newData) {
   });
 
 }
- 
+
 function readDotaHeroFile(path, query, channelID, userID) {
   var query = query.toLowerCase().replace(/\s+/g, '').replace(/-/g, "");
   fs.readFile(path, 'utf8', function(err, data) {
@@ -855,6 +857,134 @@ function steamStatus(channelID, userID) {
 }
 
 
+function leaderboardMessage(channelID, userID) {
+
+  https.get("https://www.dota2.com/webapi/ILeaderboard/GetDivisionLeaderboard/v0001?division=americas", res => {
+    res.setEncoding("utf8");
+    let bodyUS = "";
+    res.on("data", dataUS => {
+      bodyUS += dataUS;
+    });
+    res.on("end", () => {
+      bodyUS = JSON.parse(bodyUS);
+
+      https.get("https://www.dota2.com/webapi/ILeaderboard/GetDivisionLeaderboard/v0001?division=europe", res => {
+        res.setEncoding("utf8");
+        let bodyEU = "";
+        res.on("data", dataEU => {
+          bodyEU += dataEU;
+        });
+        res.on("end", () => {
+          bodyEU = JSON.parse(bodyEU);
+
+          https.get("https://www.dota2.com/webapi/ILeaderboard/GetDivisionLeaderboard/v0001?division=se_asia", res => {
+            res.setEncoding("utf8");
+            let bodySEA = "";
+            res.on("data", dataSEA => {
+              bodySEA += dataSEA;
+            });
+            res.on("end", () => {
+              bodySEA = JSON.parse(bodySEA);
+
+              https.get("https://www.dota2.com/webapi/ILeaderboard/GetDivisionLeaderboard/v0001?division=china", res => {
+                res.setEncoding("utf8");
+                let bodyAsia = "";
+                res.on("data", dataAsia => {
+                  bodyAsia += dataAsia;
+                });
+                res.on("end", () => {
+                  bodyAsia = JSON.parse(bodyAsia);
+                  var americasLeaderboardString = "";
+
+                  for (var i = 0; i < 10; i++) {
+                    americasLeaderboardString += (i + 1) + ". ";
+                    if (bodyUS.leaderboard[i].team_tag !== "" && (bodyUS.leaderboard[i].hasOwnProperty('team_tag') == true)) {
+                      americasLeaderboardString += bodyUS.leaderboard[i].team_tag + "."
+                    }
+                    americasLeaderboardString += bodyUS.leaderboard[i].name + "\n";
+                  }
+                  americasLeaderboardString = escapeBackTicks(americasLeaderboardString);
+                  var europeLeaderboardString = "";
+
+                  for (var i = 0; i < 10; i++) {
+                    europeLeaderboardString += (i + 1) + ". ";
+                    if (bodyEU.leaderboard[i].team_tag !== "" && (bodyEU.leaderboard[i].hasOwnProperty('team_tag') == true)) {
+                      europeLeaderboardString += bodyEU.leaderboard[i].team_tag + "."
+                    }
+                    europeLeaderboardString += bodyEU.leaderboard[i].name + "\n";
+                  }
+                  europeLeaderboardString = escapeBackTicks(europeLeaderboardString);
+                  var seaLeaderboardString = "";
+
+                  for (var i = 0; i < 10; i++) {
+                    seaLeaderboardString += (i + 1) + ". ";
+                    if (bodySEA.leaderboard[i].team_tag !== "" && (bodySEA.leaderboard[i].hasOwnProperty('team_tag') == true)) {
+                      seaLeaderboardString += bodySEA.leaderboard[i].team_tag + "."
+                    }
+                    seaLeaderboardString += bodySEA.leaderboard[i].name + "\n";
+                  }
+                  seaLeaderboardString = escapeBackTicks(seaLeaderboardString);
+                  var asiaLeaderboardString = "";
+
+                  for (var i = 0; i < 10; i++) {
+                    asiaLeaderboardString += (i + 1) + ". ";
+                    if (bodyAsia.leaderboard[i].team_tag !== "" && (bodyAsia.leaderboard[i].hasOwnProperty('team_tag') == true)) {
+                      asiaLeaderboardString += bodyAsia.leaderboard[i].team_tag + "."
+                    }
+                    asiaLeaderboardString += bodyAsia.leaderboard[i].name + "\n";
+                  }
+                  asiaLeaderboardString = escapeBackTicks(asiaLeaderboardString);
+                  bot.sendMessage({
+                    to: channelID,
+                    message: "Here are the top 10 players in each region " + "<@!" + userID + ">" + "!",
+                    embed: {
+                      title: "Leaderboards",
+                      url: "http://www.dota2.com/leaderboards/",
+                      fields: [{
+                        name: "Americas",
+                        value: americasLeaderboardString
+                      }, {
+                        name: "Europe",
+                        value: europeLeaderboardString
+                      }, {
+                        name: "South East Asia",
+                        value: seaLeaderboardString
+                      }, {
+                        name: "China",
+                        value: asiaLeaderboardString
+                      }]
+                    }
+                  }, function(error, response) {
+                    console.log(error);
+                    console.log(response);
+                  });
+
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+}
+
+function escapeBackTicks(string) {
+  var index = string.indexOf('`', index);
+
+  while (string.indexOf('`', index) != -1) {
+    //console.log(string.substring(0,index)+" \\  " + string.substring(index));
+    string = string.substring(0, index) + ("\\") + string.substring(index);
+    if (string.indexOf('`', index+2) == -1) {
+      return string;
+    }
+    index = string.indexOf('`', index+2);
+  }
+  return string;
+}
+
+
+
 bot.on('message', function(user, userID, channelID, message, evt) {
   // Our bot needs to know if it will execute a command
   // It will listen for messages that will start with `!`
@@ -894,7 +1024,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
       case 'help':
         bot.sendMessage({
           to: channelID,
-          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n\n `!playercounts` to see how many players are on steam and in steam games.\n\n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n\n `!playercounts` to see how many players are on steam and in steam games.\n\n `!dotaleaderboards` to see the current dota MMR leaderboards. \n\n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
         });
         break;
       case 'dotaprofile':
@@ -1097,12 +1227,11 @@ bot.on('message', function(user, userID, channelID, message, evt) {
       case 'playercounts':
         console.log(userID);
         steamStatus(channelID, userID)
-
-
-
-
         break;
-
+      case 'dotaleaderboards':
+        console.log(userID);
+        leaderboardMessage(channelID, userID)
+        break;
     }
   }
 });
