@@ -469,7 +469,7 @@ function readDotaHeroFile(path, query, channelID, userID) {
       message: "Your wish is my command " + "<@!" + userID + ">" + "!",
       embed: {
         title: bestHero.localized_name,
-        url: "https://dota2.gamepedia.com/"+bestHero.localized_name.split(' ').join('_'),
+        url: "https://dota2.gamepedia.com/" + bestHero.localized_name.split(' ').join('_'),
         color: colorSet,
         thumbnail: {
           url: "http://cdn.dota2.com/apps/dota2/images/heroes/" + bestHero.name.substring(bestHero.name.indexOf("hero_") + 5) + "_lg.png"
@@ -618,7 +618,7 @@ function readDotaItemFile(path, query, channelID, userID) {
       message: "Your wish is my command " + "<@!" + userID + ">" + "!",
       embed: {
         title: bestItem.dname,
-          url: "https://dota2.gamepedia.com/"+bestItem.dname.split(' ').join('_'),
+        url: "https://dota2.gamepedia.com/" + bestItem.dname.split(' ').join('_'),
         thumbnail: {
           url: "http://cdn.dota2.com/apps/dota2/images/" + bestItem.img.substring(bestItem.img.indexOf("items/"), bestItem.img.indexOf("?3"))
         },
@@ -633,6 +633,7 @@ function readDotaItemFile(path, query, channelID, userID) {
   });
 
 }
+
 function isInt(value) {
   var x;
   if (isNaN(value)) {
@@ -641,12 +642,13 @@ function isInt(value) {
   x = parseFloat(value);
   return (x | 0) === x;
 }
-function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userID,repeats) {
+
+function randomStatNumbers(path, line, min, max, numberOfNumbers, channelID, userID, repeats) {
 
   fs.readFile(path, 'utf8', function(err, data) {
     if (err) throw err;
-    console.log("min:"+min+"; max:"+max+"; min>max:"+min>max+"");
-    if(!isInt(line)||!isInt(min)||!isInt(max)||!isInt(numberOfNumbers)){
+    console.log("min:" + min + "; max:" + max + "; min>max:" + min > max + "");
+    if (!isInt(line) || !isInt(min) || !isInt(max) || !isInt(numberOfNumbers)) {
       bot.sendMessage({
         to: channelID,
         message: "Hey " + "<@!" + userID + ">" + ", no decimals pls.",
@@ -655,102 +657,201 @@ function randomStatNumbers(path, line, min,max,numberOfNumbers, channelID, userI
     }
     max = Math.ceil(parseInt(max));
     min = Math.ceil(parseInt(min));
-    if(parseInt(min)>parseInt(max)||line<101||line>150){
+    if (parseInt(min) > parseInt(max) || line < 101 || line > 150) {
       bot.sendMessage({
         to: channelID,
         message: "Hey " + "<@!" + userID + ">" + ", your parameters are off.",
       });
       return;
     }
-    if(repeats=='false'){
-    if((max-min)<numberOfNumbers){
+    if (repeats == 'false') {
+      if ((max - min) < numberOfNumbers) {
+        bot.sendMessage({
+          to: channelID,
+          message: "Hey " + "<@!" + userID + ">" + ", your parameters make it impossible not to have repeats.",
+        });
+        return;
+
+      }
+    }
+    console.log("rep:" + repeats);
+
+    if (repeats === undefined || !(repeats.toLowerCase() == 'true' || repeats.toLowerCase() == 'false')) {
       bot.sendMessage({
         to: channelID,
-        message: "Hey " + "<@!" + userID + ">" + ", your parameters make it impossible not to have repeats.",
+        message: "Hey " + "<@!" + userID + ">" + ", I don't know if you want repeats or not.",
+      });
+      return;
+    }
+    if (!isFinite(line) || !isFinite(min) || !isFinite(max) || !isFinite(numberOfNumbers)) {
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ",  your parameters are weird.",
+      });
+      return;
+    }
+    if (parseInt(numberOfNumbers) <= 0) {
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ",  you wont get any nuumbers this way.",
+      });
+      return;
+    }
+    var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
+    if (((line - 101) * 40 + digits * numberOfNumbers) >= 2000) {
+      bot.sendMessage({
+        to: channelID,
+        message: "Hey " + "<@!" + userID + ">" + ", there aren't enough numbers in the table to satisfy your request.",
       });
       return;
 
     }
-  }
-  console.log("rep:"+repeats);
-
-  if(repeats===undefined ||!(repeats.toLowerCase() == 'true'||repeats.toLowerCase() == 'false')){
-    bot.sendMessage({
-      to: channelID,
-      message: "Hey " + "<@!" + userID + ">" + ", I don't know if you want repeats or not.",
-    });
-    return;
-  }
-  if(!isFinite(line)||!isFinite(min)||!isFinite(max)||!isFinite(numberOfNumbers)){
-    bot.sendMessage({
-      to: channelID,
-      message: "Hey " + "<@!" + userID + ">" + ",  your parameters are weird.",
-    });
-    return;
-  }
-  if(parseInt(numberOfNumbers)<=0){
-    bot.sendMessage({
-      to: channelID,
-      message: "Hey " + "<@!" + userID + ">" + ",  you wont get any nuumbers this way.",
-    });
-    return;
-  }
-  var digits = Math.max(Math.floor(Math.log10(Math.abs(max))), 0) + 1;
-  if(((line-101)*40+digits*numberOfNumbers)>=2000){
-    bot.sendMessage({
-      to: channelID,
-      message: "Hey " + "<@!" + userID + ">" + ", there aren't enough numbers in the table to satisfy your request.",
-    });
-    return;
-
-  }
     var numbers = [];
     var numberString = "";
-    var preString = "Hey " + "<@!" + userID + ">"+ ", your numbers are the following: ";
-    var newData = data.substring((line-101)*40);
+    var preString = "Hey " + "<@!" + userID + ">" + ", your numbers are the following: ";
+    var newData = data.substring((line - 101) * 40);
     var x = 0;
     var index = 0;
-    console.log("min:"+min+"; max:"+max+"; min>max:"+min>max);
-    console.log("digits: "+digits+"; "+"numOfNum: "+numberOfNumbers+"; "+"line: "+line+"; "+"min: "+min+"; "+"max: "+max+"; ");
-    while(x<numberOfNumbers){
+    console.log("min:" + min + "; max:" + max + "; min>max:" + min > max);
+    console.log("digits: " + digits + "; " + "numOfNum: " + numberOfNumbers + "; " + "line: " + line + "; " + "min: " + min + "; " + "max: " + max + "; ");
+    while (x < numberOfNumbers) {
 
 
-      var tempNum = newData.substring(index,index+digits);
-      if(tempNum===""){
-        preString = "So uh... There aren't enough numbers left for you to get `"+numberOfNumbers+"` so I'll give you what I have "+ "<@!" + userID + ">"+" :(\n";
+      var tempNum = newData.substring(index, index + digits);
+      if (tempNum === "") {
+        preString = "So uh... There aren't enough numbers left for you to get `" + numberOfNumbers + "` so I'll give you what I have " + "<@!" + userID + ">" + " :(\n";
         break;
       }
-        console.log("val:"+x+"vale2:"+tempNum);
-      if(parseInt(tempNum)>=parseInt(min)&&parseInt(tempNum)<=parseInt(max)){
-          if(repeats=='false'){
-            if(numbers.indexOf(tempNum)==-1){
-              numbers.push(tempNum);
-              numberString+=" `"+tempNum+"`";
+      console.log("val:" + x + "vale2:" + tempNum);
+      if (parseInt(tempNum) >= parseInt(min) && parseInt(tempNum) <= parseInt(max)) {
+        if (repeats == 'false') {
+          if (numbers.indexOf(tempNum) == -1) {
+            numbers.push(tempNum);
+            numberString += " `" + tempNum + "`";
             x++;
-            }
           }
-          else{
+        } else {
           numbers.push(tempNum);
-          numberString+=" `"+tempNum+"`";
-        x++;
+          numberString += " `" + tempNum + "`";
+          x++;
+        }
       }
-      }
-    index+=digits;
+      index += digits;
     }
 
 
 
-      bot.sendMessage({
-        to: channelID,
-        message: preString +numberString,
-      });
-      return;
+    bot.sendMessage({
+      to: channelID,
+      message: preString + numberString,
+    });
+    return;
 
 
 
 
   });
 
+}
+
+function steamStatus(channelID, userID) {
+
+  https.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=KEY&format=json&appid=", res => {
+    res.setEncoding("utf8");
+    let bodyAll = "";
+    res.on("data", dataAll => {
+      bodyAll += dataAll;
+    });
+    res.on("end", () => {
+      bodyAll = JSON.parse(bodyAll);
+
+      https.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=KEY&format=json&appid=570", res => {
+        res.setEncoding("utf8");
+        let bodyDota = "";
+        res.on("data", dataDota => {
+          bodyDota += dataDota;
+        });
+        res.on("end", () => {
+          bodyDota = JSON.parse(bodyDota);
+
+          https.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=KEY&format=json&appid=730", res => {
+            res.setEncoding("utf8");
+            let bodyCSGO = "";
+            res.on("data", dataCSGO => {
+              bodyCSGO += dataCSGO;
+            });
+            res.on("end", () => {
+              bodyCSGO = JSON.parse(bodyCSGO);
+
+              https.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=KEY&format=json&appid=440", res => {
+                res.setEncoding("utf8");
+                let bodyTF = "";
+                res.on("data", dataTF => {
+                  bodyTF += dataTF;
+                });
+                res.on("end", () => {
+                  bodyTF = JSON.parse(bodyTF);
+
+                  https.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=KEY&format=json&appid=271590", res => {
+                    res.setEncoding("utf8");
+                    let bodyGTA = "";
+                    res.on("data", dataGTA => {
+                      bodyGTA += dataGTA;
+                    });
+                    res.on("end", () => {
+                      bodyGTA = JSON.parse(bodyGTA);
+
+                      https.get("https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?key=KEY&format=json&appid=578080", res => {
+                        res.setEncoding("utf8");
+                        let bodyPUBG = "";
+                        res.on("data", dataPUBG => {
+                          bodyPUBG += dataPUBG;
+                        });
+                        res.on("end", () => {
+                          bodyPUBG = JSON.parse(bodyPUBG);
+
+                          bot.sendMessage({
+                            to: channelID,
+                            message: "Here are some popular steam games " + "<@!" + userID + ">" + "!",
+                            embed: {
+                              title: "Player Counts",
+                              url: "http://store.steampowered.com/stats/",
+                              fields: [{
+                                name: "Steam",
+                                value: numberWithCommas(bodyAll.response.player_count) + " currently online."
+                              }, {
+                                name: "Dota 2",
+                                value: numberWithCommas(bodyDota.response.player_count) + " currently in game."
+                              }, {
+                                name: "CSGO",
+                                value: numberWithCommas(bodyCSGO.response.player_count) + " currently in game."
+                              }, {
+                                name: "TF2",
+                                value: numberWithCommas(bodyTF.response.player_count) + " currently in game."
+                              }, {
+                                name: "GTA V",
+                                value: numberWithCommas(bodyGTA.response.player_count) + " currently in game."
+                              }, {
+                                name: "PUBG",
+                                value: numberWithCommas(bodyPUBG.response.player_count) + " currently in game."
+                              }]
+                            }
+                          }, function(error, response) {
+                            console.log(error);
+                            console.log(response);
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
 }
 
 
@@ -793,7 +894,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
       case 'help':
         bot.sendMessage({
           to: channelID,
-          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n \n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n\n `!playercounts` to see how many players are on steam and in steam games.\n\n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
         });
         break;
       case 'dotaprofile':
@@ -982,17 +1083,25 @@ bot.on('message', function(user, userID, channelID, message, evt) {
 
 
         break;
-        case 'randtablenum':
-          console.log(userID);
+      case 'randtablenum':
+        console.log(userID);
 
-            var input = message.substring(message.indexOf(' ') + 1);
-            var params = input.split(" ");
-
-
-randomStatNumbers("ap_stat_table_b.txt", params[0], params[1],params[2],params[3], channelID, userID,params[4])
+        var input = message.substring(message.indexOf(' ') + 1);
+        var params = input.split(" ");
 
 
-          break;
+        randomStatNumbers("ap_stat_table_b.txt", params[0], params[1], params[2], params[3], channelID, userID, params[4])
+
+
+        break;
+      case 'playercounts':
+        console.log(userID);
+        steamStatus(channelID, userID)
+
+
+
+
+        break;
 
     }
   }
