@@ -1024,7 +1024,7 @@ bot.on('message', function(user, userID, channelID, message, evt) {
       case 'help':
         bot.sendMessage({
           to: channelID,
-          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n\n `!playercounts` to see how many players are on steam and in steam games.\n\n `!dotaleaderboards` to see the current Dota 2 MMR leaderboards. \n\n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
+          message: "Hey " + "<@!" + userID + ">" + ", here's what I can do. You can say:\n \n `!ping` to see if the bot is online.\n \n `!gethero <hero-name>` to see hero info.\n \n `!getitem <item-name>` to see item info.\n \n `!dotaprofile <steam id (custom or not)>` to get basic dota info.\n \n `!csgostats <steam id (custom or not)>` to get csgo info.\n \n `!banstatus <steam id (custom or not)>` to get ban info.\n \n `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.\n\n `!playercounts` to see how many players are on steam and in steam games.\n\n `!dotaleaderboards` to see the current Dota 2 MMR leaderboards. \n\n `!mmrconversion` to see the approximate Dota 2 MMR conversion table.\n\n **PRO TIP**: i will only accept 1 message per 5 seconds from each user because Dhruv will spam me otherwise."
         });
         break;
       case 'dotaprofile':
@@ -1232,6 +1232,41 @@ bot.on('message', function(user, userID, channelID, message, evt) {
         console.log(userID);
         leaderboardMessage(channelID, userID)
         break;
+        case 'mmrconversion':
+          console.log(userID);
+          bot.sendMessage({
+            to: channelID,
+            message: "Here are the MMR conversions " + "<@!" + userID + ">" + "!",
+            embed: {
+              title: "Rank Conversions",
+              fields: [{
+                name: "Herald",
+                value: "[0]: 0; [1]: 140; [2]: 280; [3]: 420; [4]: 560; [5]: 700;"
+              }, {
+                name: "Guardian",
+                value: "[0]: 840; [1]: 980; [2]: 1120; [3]: 1260; [4]: 1400; [5]: 1540;"
+              }, {
+                name: "Crusader",
+                value: "[0]: 1680; [1]: 1820; [2]: 1960; [3]: 2100; [4]: 2240; [5]: 2380;"
+              }, {
+                name: "Archon",
+                value: "[0]: 2520; [1]: 2660; [2]: 2800; [3]: 2940; [4]: 3080; [5]: 3220;"
+              }, {
+                name: "Legend",
+                value: "[0]: 3360; [1]: 3500; [2]: 3640; [3]: 3780; [4]: 3920; [5]: 4060;"
+              }, {
+                name: "Ancient",
+                value: "[0]: 4200; [1]: 4340; [2]: 4480; [3]: 4620; [4]: 4760; [5]: 4900;"
+              }, {
+                name: "Divine",
+                value: "[0]: 5040; [1]: 5180; [2]: 5320; [3]: 5460; [4]: 5600; [5]: 5740;"
+              }]
+            }
+          }, function(error, response) {
+            console.log(error);
+            console.log(response);
+          });
+          break;
     }
   }
 });
