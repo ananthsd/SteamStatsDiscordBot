@@ -15,8 +15,6 @@ This is a bot I am working on that pulls information from Steam, OpenDota, and m
 
 `!banstatus <steam id (custom or not)>` to get ban info.
 
-`!refreshdotadata` only works if your id matches the one in auth.json. It takes dota data from OpenDota's github so the bot doesn't have to download it each time it wants to look up hero/item/ability info.
-
 `!randtablenum <Line> <Min> <Max> <Number Of Numbers> <Repeats(true or false)>` to get a random number from the AP Stats Table.
 
 `!playercounts` to see how many players are on steam and in steam games.
@@ -26,3 +24,22 @@ This is a bot I am working on that pulls information from Steam, OpenDota, and m
 `!mmrconversion` to see the approximate Dota 2 MMR conversion table.
 ## Anti-Spam
 The bot only accepts commands every 5 seconds for each user, so multiple people can send 1 command each within 5 seconds, but a single person can't send commands more than 1 per 5 seconds.
+
+## Setup
+Create a file named `auth.json` in the same directory as `bot.js`.
+It should consist of
+```json
+{
+   "token": "discord-bot-token",
+   "steamKey": "steam-api-key",
+   "adminID": "admin-discord-id"
+}
+
+```
+You can get a steam api key [here](http://steamcommunity.com/dev/apikey). 
+
+Create a discord bot [here](https://discordapp.com/developers/applications/me#tophttps://discordapp.com/developers/applications/me#top).
+
+Find your discord id with [this guide](https://support.discordapp.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).
+
+The bot refreshes dota data once a week, but it can be manually refreshed by `!refreshdotadata`. Only the admin of the bot defined in `auth.json` can use this command. This data is pulled from this [repository](https://github.com/odota/dotaconstants).
