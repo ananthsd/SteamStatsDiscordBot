@@ -172,6 +172,15 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
 
   https.get("https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + auth.steamKey + "&steamid=" + steam64ID + "&appid=730", res => {
     res.setEncoding("utf8");
+    console.log(res.statuscode);
+    if(res.statuscode==500){
+	bot.sendMessage({
+          to: channelID,
+          message: "Blocked by player's privacy settings."
+
+        });
+	return;
+	}
     let body = "";
     res.on("data", data => {
       body += data;
