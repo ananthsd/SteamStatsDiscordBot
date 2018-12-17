@@ -172,19 +172,20 @@ function doCSGOStats(channelID, steam64ID, profilePic, name, customUrl, userID) 
 
   https.get("https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/?key=" + auth.steamKey + "&steamid=" + steam64ID + "&appid=730", res => {
     res.setEncoding("utf8");
-    if(body.indexOf("500 Internal Server Error")!=-1){
-	     bot.sendMessage({
-          to: channelID,
-          message: "Blocked by player's privacy settings."
 
-        });
-	return;
-	}
     let body = "";
     res.on("data", data => {
       body += data;
     });
     res.on("end", () => {
+      if(body.indexOf("500 Internal Server Error")!=-1){
+         bot.sendMessage({
+            to: channelID,
+            message: "Blocked by player's privacy settings."
+
+          });
+          return;
+        }
       body = JSON.parse(body);
       if (body.playerstats == undefined) {
         console.log("profile not found");
